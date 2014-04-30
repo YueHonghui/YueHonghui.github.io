@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>光明顶 - rtmp</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">光明顶 </a></h1>
+                <nav><ul>
+                    <li><a href="/category/kai-fa.html">开发</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/static_compile_rtmpdump_and_ffmpeg.html">静态编译rtmpdump+ffmpeg</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2013-08-03T20:20:00">
+                Sat 03 August 2013
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/hongfyuehotmailcom.html">hongf.yue@hotmail.com</a>
+        </address>
+<p>In <a href="/category/kai-fa.html">开发</a>. </p>
+<p>tags: <a href="/tag/rtmp.html">rtmp</a><a href="/tag/ffmpeg.html">ffmpeg</a></p>
+</footer><!-- /.post-info --><p>废话不多说, 直接上编译脚本, debian 7.1 amd64上测试通过:</p>
+<div class="highlight"><pre>BUILD_DIR=<span class="nv">$HOME</span>/work/ffmpeg/build
+BIN_DIR=<span class="nv">$HOME</span>/work/ffmpeg/bin
+
+#zlib
+wget http://zlib.net/zlib-1.2.8.tar.gz
+tar -zxvf zlib-1.2.8.tar.gz
+cd zlib-1.2.8
+./configure --prefix=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span> --static
+make -j2
+make install
+cd ..
+
+#openssl
+wget http://www.openssl.org/source/openssl-1.0.1e.tar.gz
+tar -zxvf openssl-1.0.1e.tar.gz
+cd openssl-1.0.1e
+./config --prefix=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span> --openssldir=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span>/openssl no-shared zlib
+make -j2
+make install
+cd ..
+
+#rtmpdump
+wget http://rtmpdump.mplayerhq.hu/download/rtmpdump-2.3.tgz
+tar -zxvf rtmpdump-2.3.tgz
+cd rtmpdump-2.3
+make prefix=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span> SYS=posix SHARED= XLDFLAGS=-L<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span>/lib XLIBS=-  ldl
+make install prefix=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span> SYS=posix SHARED= XLDFLAGS=-L<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span>/lib XLIBS=-ldl
+cd ..
+
+#yasm
+wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz yasm-1.2.0.tar.gz
+tar -zxvf yasm-1.2.0.tar.gz
+cd yasm-1.2.0
+./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --bindir=&quot;<span class="nv">$BIN_DIR</span>&quot;
+make -j2
+make install
+make distclean
+export PATH=<span class="cp">${</span><span class="n">BIN_DIR</span><span class="cp">}</span>:<span class="cp">${</span><span class="n">PATH</span><span class="cp">}</span>
+#. ~/.bash_profile
+cd ..
+
+#x264
+git clone --depth 1 git://git.videolan.org/x264.git
+cd x264
+./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --bindir=&quot;<span class="nv">$BIN_DIR</span>&quot; --enable-static
+make -j2
+make install-lib-static
+make distclean
+cd ..
+
+#fdk_aac
+git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git
+cd fdk-aac
+automake --add-missing
+autoreconf -fiv
+./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-shared
+make -j2
+make install
+make distclean
+cd ..
+
+#mp3lame
+wget http://downloads.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz lame-    3.99.5.tar.gz
+tar xzvf lame-3.99.5.tar.gz
+cd lame-3.99.5
+./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --bindir=&quot;<span class="nv">$BIN_DIR</span>&quot; --disable-shared --enable-nasm
+make -j2
+make install
+make distclean
+cd ..
+
+#opus
+wget http://downloads.xiph.org/releases/opus/opus-1.0.2.tar.gz
+tar -zxvf opus-1.0.2.tar.gz
+cd opus-1.0.2
+./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-shared
+make -j2
+make install
+make distclean
+cd ..
+
+#ogg
+wget http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.gz
+tar -zxvf libogg-1.3.1.tar.gz
+cd libogg-1.3.1
+./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-shared
+make -j2
+make install
+make distclean
+cd ..
+
+#vorbis
+wget http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.gz
+tar -zxvf libvorbis-1.3.3.tar.gz
+cd libvorbis-1.3.3
+./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --with-ogg=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-shared
+make -j2
+make install
+make distclean
+cd ..
+
+#vpx
+#git clone --depth 1 http://git.chromium.org/webm/libvpx.git
+#cd libvpx
+#./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-examples
+#make -j2
+#make install
+#make clean
+
+#ffmpeg
+wget http://www.ffmpeg.org/releases/ffmpeg-1.2.3.tar.gz
+tar -zxvf ffmpeg-1.2.3.tar.gz
+cd ffmpeg-1.2.3
+PKG_CONFIG_PATH=&quot;<span class="nv">$BUILD_DIR</span>/lib/pkgconfig&quot; ./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --extra-cflags=&quot;-I<span class="nv">$BUILD_DIR</span>/include&quot; --extra-ldflags=&quot;-L<span class="nv">$BUILD_DIR</span>/lib&quot; --bindir=&quot;<span class="nv">$BIN_DIR</span>&quot; --extra-libs=&quot;-ldl&quot; --enable-gpl --enable-nonfree --enable-libfdk_aac --enable-libmp3lame --enable-libopus --enable-libvorbis --enable-libx264 --enable-librtmp
+make -j2
+make install
+hash -r
+#. ~/.bash_profile
+</pre></div>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

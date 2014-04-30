@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
         <meta charset="utf-8" />
-        <title>光明顶 - 开发</title>
+        <title>什么时候该用assert</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
 
         <!--[if IE]>
@@ -17,10 +17,15 @@
                     <li class="active"><a href="/category/kai-fa.html">开发</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/when_to_use_assert.html" rel="bookmark"
+           title="Permalink to 什么时候该用assert">什么时候该用assert</a></h1>
+    </header>
 
-            <aside id="featured" class="body">
-                <article>
-                    <h1 class="entry-title"><a href="/when_to_use_assert.html">什么时候该用assert</a></h1>
+    <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2013-11-01T15:09:00">
                 Fri 01 November 2013
@@ -31,7 +36,7 @@
         </address>
 <p>In <a href="/category/kai-fa.html">开发</a>. </p>
 <p>tags: <a href="/tag/assert.html">assert</a></p>
-</footer><!-- /.post-info --><p>什么时候适合用assert? 今天跟同事争论起这个话题, 特别想就这个问题展开讨论讨论. </p>
+</footer><!-- /.post-info -->      <p>什么时候适合用assert? 今天跟同事争论起这个话题, 特别想就这个问题展开讨论讨论. </p>
 <p><strong>适合用assert的地方</strong> :</p>
 <ol>
 <li>侦测到程序逻辑有bug, 即程序状态超出了既定符合逻辑的状态集, 这种错误一定是由程序员引入的</li>
@@ -53,61 +58,11 @@
 <li>crashrpt (https://code.google.com/p/crashrpt/)</li>
 <li>google-breakpad (https://code.google.com/p/google-breakpad/)</li>
 </ol>
-<p>通过crashrpt提供的FAQ, 可以看出, 当程序在用户端crash后, 会自动另起一个进程来收集和发送crash的信息.</p>                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+<p>通过crashrpt提供的FAQ, 可以看出, 当程序在用户端crash后, 会自动另起一个进程来收集和发送crash的信息.</p>
+    </div><!-- /.entry-content -->
 
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/notes_of_libevent.html" rel="bookmark"
-                           title="Permalink to libevent使用注意事项">libevent使用注意事项</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2013-10-03T10:20:00">
-                Thu 03 October 2013
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="/author/hhyue.html">hhyue</a>
-        </address>
-<p>In <a href="/category/kai-fa.html">开发</a>. </p>
-<p>tags: <a href="/tag/libevent.html">libevent</a><a href="/tag/assert.html">assert</a></p>
-</footer><!-- /.post-info -->                <p>libevent使用注意事项</p>
-                <a class="readmore" href="/notes_of_libevent.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/static_compile_rtmpdump_and_ffmpeg.html" rel="bookmark"
-                           title="Permalink to 静态编译rtmpdump+ffmpeg">静态编译rtmpdump+ffmpeg</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2013-08-03T20:20:00">
-                Sat 03 August 2013
-        </abbr>
-
-        <address class="vcard author">
-                By <a class="url fn" href="/author/hongfyuehotmailcom.html">hongf.yue@hotmail.com</a>
-        </address>
-<p>In <a href="/category/kai-fa.html">开发</a>. </p>
-<p>tags: <a href="/tag/rtmp.html">rtmp</a><a href="/tag/ffmpeg.html">ffmpeg</a></p>
-</footer><!-- /.post-info -->                <p>静态编译rtmpdump+ffmpeg</p>
-                <a class="readmore" href="/static_compile_rtmpdump_and_ffmpeg.html">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-            </ol><!-- /#posts-list -->
-<p class="paginator">
-    Page 1 / 1
-</p>
-            </section><!-- /#content -->
+  </article>
+</section>
         <section id="extras" class="body">
                 <div class="blogroll">
                         <h2>blogroll</h2>

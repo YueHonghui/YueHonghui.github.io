@@ -39,19 +39,19 @@
 </footer><!-- /.post-info -->      <p>之前的项目中使用了libevent作为事件发生器, 在使用的过程中, 发生了好多次程序的测试时进入了死循环. 通过发信号中断其运行, 并保存backtrace, 断定死循环发生在libevent的内部loop中. 经过多番排查, 猜测可能是struct event没有初始化, 便进行了event_add操作, 或者是进行了多次event_add和event_del. 翻看libevent源码, 发现当event_set, event_add, event_del调用序列如果不对, 会弄乱libevent内部结构.</p>
 <p>为了彻底防止这种非法调用序列的发生, 写了一个libevent的包装层, 针对常用的几个api, 自己做了层状态守护, 一旦发现非法调用序列, 立即assert.</p>
 <p>合法调用序列如下:</p>
-<div class="highlight"><pre><span class="c1">//event</span>
-<span class="n">event_set</span><span class="o">-&gt;</span><span class="n">event_set</span><span class="p">;</span>
-<span class="n">event_set</span><span class="o">-&gt;</span><span class="n">event_add</span><span class="p">;</span>
-<span class="n">event_add</span><span class="o">-&gt;</span><span class="n">event_del</span><span class="p">;</span>
-<span class="n">event_del</span><span class="o">-&gt;</span><span class="n">event_set</span><span class="p">;</span>
+<div class="highlight"><pre>    <span class="o">//</span><span class="n">event</span>
+    <span class="n">event_set</span><span class="o">-&gt;</span><span class="n">event_set</span><span class="p">;</span>
+    <span class="n">event_set</span><span class="o">-&gt;</span><span class="n">event_add</span><span class="p">;</span>
+    <span class="n">event_add</span><span class="o">-&gt;</span><span class="n">event_del</span><span class="p">;</span>
+    <span class="n">event_del</span><span class="o">-&gt;</span><span class="n">event_set</span><span class="p">;</span>
 
-<span class="c1">//timer</span>
-<span class="n">evtimer_set</span><span class="o">-&gt;</span><span class="n">evtimer_set</span><span class="p">;</span>
-<span class="n">evtimer_set</span><span class="o">-&gt;</span><span class="n">evtimer_add</span><span class="p">;</span>
-<span class="n">evtimer_add</span><span class="o">-&gt;</span><span class="n">evtimer_del</span><span class="p">;</span>
-<span class="n">evtimer_del</span><span class="o">-&gt;</span><span class="n">evtimer_set</span>
-<span class="n">evtimer_add</span><span class="o">-&gt;</span><span class="n">timeout</span>
-<span class="n">timeout</span><span class="o">-&gt;</span><span class="n">evtimer_set</span><span class="p">;</span>
+    <span class="o">//</span><span class="n">timer</span>
+    <span class="n">evtimer_set</span><span class="o">-&gt;</span><span class="n">evtimer_set</span><span class="p">;</span>
+    <span class="n">evtimer_set</span><span class="o">-&gt;</span><span class="n">evtimer_add</span><span class="p">;</span>
+    <span class="n">evtimer_add</span><span class="o">-&gt;</span><span class="n">evtimer_del</span><span class="p">;</span>
+    <span class="n">evtimer_del</span><span class="o">-&gt;</span><span class="n">evtimer_set</span>
+    <span class="n">evtimer_add</span><span class="o">-&gt;</span><span class="n">timeout</span>
+    <span class="n">timeout</span><span class="o">-&gt;</span><span class="n">evtimer_set</span><span class="p">;</span>
 </pre></div>
 
 
