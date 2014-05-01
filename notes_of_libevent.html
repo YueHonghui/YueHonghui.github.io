@@ -3,7 +3,7 @@
 <head>
         <meta charset="utf-8" />
         <title>libevent使用注意事项</title>
-        <link rel="stylesheet" href="/theme/css/main.css" />
+        <link rel="stylesheet" href="http://blog.hhyue.com/theme/css/main.css" />
 
         <!--[if IE]>
             <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -12,41 +12,41 @@
 
 <body id="index" class="home">
         <header id="banner" class="body">
-                <h1><a href="/">光明顶 </a></h1>
+                <h1><a href="http://blog.hhyue.com/">光明顶 </a></h1>
                 <nav><ul>
-                    <li class="active"><a href="/category/kai-fa.html">开发</a></li>
-                    <li><a href="/category/sheng-huo-za-tan.html">生活杂谈</a></li>
+                    <li class="active"><a href="http://blog.hhyue.com/category/kai-fa.html">开发</a></li>
+                    <li><a href="http://blog.hhyue.com/category/sheng-huo-za-tan.html">生活杂谈</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 <section id="content" class="body">
   <article>
     <header>
       <h1 class="entry-title">
-        <a href="/notes_of_libevent.html" rel="bookmark"
+        <a href="http://blog.hhyue.com/notes_of_libevent.html" rel="bookmark"
            title="Permalink to libevent使用注意事项">libevent使用注意事项</a></h1>
     </header>
 
     <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2013-10-03T10:20:00">
-                Thu 03 October 2013
+                2013-10-03 10:20:00
         </abbr>
 
         <address class="vcard author">
-                By <a class="url fn" href="/author/hhyue.html">hhyue</a>
+                By <a class="url fn" href="http://blog.hhyue.com/author/hhyue.html">hhyue</a>
         </address>
-<p>In <a href="/category/kai-fa.html">开发</a>. </p>
-<p>tags: <a href="/tag/libevent.html">libevent</a><a href="/tag/assert.html">assert</a></p>
+<p>In <a href="http://blog.hhyue.com/category/kai-fa.html">开发</a>. </p>
+<p>tags: <a href="http://blog.hhyue.com/tag/libevent.html">libevent</a><a href="http://blog.hhyue.com/tag/assert.html">assert</a></p>
 </footer><!-- /.post-info -->      <p>之前的项目中使用了libevent作为事件发生器, 在使用的过程中, 发生了好多次程序的测试时进入了死循环. 通过发信号中断其运行, 并保存backtrace, 断定死循环发生在libevent的内部loop中. 经过多番排查, 猜测可能是struct event没有初始化, 便进行了event_add操作, 或者是进行了多次event_add和event_del. 翻看libevent源码, 发现当event_set, event_add, event_del调用序列如果不对, 会弄乱libevent内部结构.</p>
 <p>为了彻底防止这种非法调用序列的发生, 写了一个libevent的包装层, 针对常用的几个api, 自己做了层状态守护, 一旦发现非法调用序列, 立即assert.</p>
 <p>合法调用序列如下:</p>
-<div class="highlight"><pre>    <span class="o">//</span><span class="n">event</span>
+<div class="highlight"><pre>    <span class="c1">//event</span>
     <span class="n">event_set</span><span class="o">-&gt;</span><span class="n">event_set</span><span class="p">;</span>
     <span class="n">event_set</span><span class="o">-&gt;</span><span class="n">event_add</span><span class="p">;</span>
     <span class="n">event_add</span><span class="o">-&gt;</span><span class="n">event_del</span><span class="p">;</span>
     <span class="n">event_del</span><span class="o">-&gt;</span><span class="n">event_set</span><span class="p">;</span>
 
-    <span class="o">//</span><span class="n">timer</span>
+    <span class="c1">//timer</span>
     <span class="n">evtimer_set</span><span class="o">-&gt;</span><span class="n">evtimer_set</span><span class="p">;</span>
     <span class="n">evtimer_set</span><span class="o">-&gt;</span><span class="n">evtimer_add</span><span class="p">;</span>
     <span class="n">evtimer_add</span><span class="o">-&gt;</span><span class="n">evtimer_del</span><span class="p">;</span>
@@ -69,15 +69,14 @@
                             <li><a href="http://getpelican.com/">Pelican</a></li>
                             <li><a href="http://python.org/">Python.org</a></li>
                             <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
-                            <li><a href="#">You can modify those links in your config file</a></li>
                         </ul>
                 </div><!-- /.blogroll -->
                 <div class="social">
                         <h2>social</h2>
                         <ul>
 
-                            <li><a href="#">You can add links in your config file</a></li>
-                            <li><a href="#">Another social link</a></li>
+                            <li><a href="https://github.com/YueHonghui">github</a></li>
+                            <li><a href="https://bitbucket.org/YueHonghui">bitbucket</a></li>
                         </ul>
                 </div><!-- /.social -->
         </section><!-- /#extras -->
