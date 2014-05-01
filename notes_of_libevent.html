@@ -1,27 +1,54 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="zh">
+<!DOCTYPE html>
+<html lang="zh">
+
   <head>
-    <title>libevent使用注意事项 - 光明顶</title>
-    <link href="http://fonts.googleapis.com/css?family=Arimo:400,700|Inika" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="http://blog.hhyue.com/theme/bootstrap.css" />
-    <link rel="stylesheet" type="text/css" href="http://blog.hhyue.com/theme/pastie.css" />
-    <link href="http://blog.hhyue.com/" type="application/atom+xml" rel="alternate" title="光明顶 Atom Feed" />
-
-
+      <title>光明顶</title>
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css' />
+      <link href='http://fonts.googleapis.com/css?family=Merriweather:300' rel='stylesheet' type='text/css'/>
+      <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:200,400,700' rel='stylesheet' type='text/css'/>
+      <link rel="stylesheet" type="text/css" href="http://blog.hhyue.com/theme/css/icons.css"/>
+      <link rel="stylesheet" type="text/css" href="http://blog.hhyue.com/theme/css/styles.css"/>
+      <meta charset="utf-8" />
   </head>
 
-  <body>
-    <div class="container">
-      <div class="row">
-        <div class="span8">
-<div id="content">
-    <div class="header">
-        <h1>libevent使用注意事项</h1>
-    </div>
-    <p class="meta"><small><span><a href="http://blog.hhyue.com/author/hhyue/">hhyue</a> - </span><span>2013-10-03 10:20:00</span> - <span class="tags"><a href="/tag/libevent/">libevent</a>, <a href="/tag/assert/">assert</a></span></small></p>
-        <div class="entry-content">
-        <p>之前的项目中使用了libevent作为事件发生器, 在使用的过程中, 发生了好多次程序的测试时进入了死循环. 通过发信号中断其运行, 并保存backtrace, 断定死循环发生在libevent的内部loop中. 经过多番排查, 猜测可能是struct event没有初始化, 便进行了event_add操作, 或者是进行了多次event_add和event_del. 翻看libevent源码, 发现当event_set, event_add, event_del调用序列如果不对, 会弄乱libevent内部结构.</p>
+  <body id="index">
+    <!-- header -->
+    <header class="siteheader">
+      <!-- site image -->
+
+      <div class = "sitebanner">
+        <h1><a class="sitetitle nodec" href="http://blog.hhyue.com">光明顶</a></h1>
+        <h3 class ="sitesubtitle"></h3>
+        <!-- nav -->
+        <nav class="menu">
+          <ul>
+            <!-- menu items-->
+            <!--pages-->
+            <!-- services icons -->
+          </ul>
+        </nav>
+      </div> <!-- sitebanner -->
+    </header>
+
+    <!-- content -->
+
+<section class="content">
+
+  <h3 class="posttitle">
+    <a class="nodec" href="/notes_of_libevent.html" rel="bookmark" title="Permalink to libevent使用注意事项">
+      libevent使用注意事项
+    </a>
+  </h3>
+
+  <div class="postinfo">
+    <p class="published" title="2013-10-03T10:20:00">
+      2013-10-03 10:20:00
+    </p>
+
+  </div><!-- .postinfo -->
+
+  <div class="article">
+    <p>之前的项目中使用了libevent作为事件发生器, 在使用的过程中, 发生了好多次程序的测试时进入了死循环. 通过发信号中断其运行, 并保存backtrace, 断定死循环发生在libevent的内部loop中. 经过多番排查, 猜测可能是struct event没有初始化, 便进行了event_add操作, 或者是进行了多次event_add和event_del. 翻看libevent源码, 发现当event_set, event_add, event_del调用序列如果不对, 会弄乱libevent内部结构.</p>
 <p>为了彻底防止这种非法调用序列的发生, 写了一个libevent的包装层, 针对常用的几个api, 自己做了层状态守护, 一旦发现非法调用序列, 立即assert.</p>
 <p>合法调用序列如下:</p>
 <div class="highlight"><pre>    <span class="c1">//event</span>
@@ -42,36 +69,19 @@
 
 <p>以上调用序列中, 完全禁止timer的event操作使用event_set, event_add, event_del等 操作, 只允许使用evtimer系列操作. 这是与libevent原有的api定义不符的, 其原有定义中timer的event是可以混用这两组api的. 为什么这样子做? 这是因为在实现这个包装层的时候, 我一直在想libevent库的api实现为什么不做这么一种状态守护, 发现非法操作时, 不是默默地接受, 而是拒绝执行(assert? 返回错误码?). 在一番尝试之后, 发现timer的event的操作的这种"灵活的选择性"成了实现这个包装层的阻碍, 无法找到办法去跟踪这种调用路径.直到去掉了这种灵活性后, 选择上面的那组合法调用序列, 包装层很快就完成了. 个人认为这是libevent的api设计的一个ugly的地方, 自作聪明地为干一件事情提供了多种"灵活的选择", 正确的做法应该是干一件事情, 有且只有一种最合适的做法.</p>
 <p>如预料的, 在提供了这层包装层后, 便发现了多个非法调用序列, 在清理完这些调用序列后, 就再也没有发生类似的死循环事件. 在这件事中, 虽然保证合法的调用序列本来就应该是调用者的责任, 但如果提供健壮的非法调用序列侦测机制, 便可以大大提高正确性和生产效率. 如非必要, 应禁止为了所谓的灵活性而牺牲api的简单和单义性.</p>
-        </div><!-- /.entry-content -->
-</div>
-        </div>
-        <div class="span3 offset1">
-          <div class="well">
-            <ul class="nav nav-list">
-              <li class="nav-header">Blog</li>
-              <li ><a href="http://blog.hhyue.com">Index</a></li>
-              <li ><a href="http://blog.hhyue.com/tags.html">Tags</a></li>
-              <li ><a href="http://blog.hhyue.com/archives.html">Archiv</a></li>
-              <li class="nav-header">Links</li>
-              <li><a href="http://getpelican.com/">Pelican</a></li>
-              <li><a href="http://python.org/">Python.org</a></li>
-              <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
-            </ul>
-          </div><!-- /#menu -->
-        </div>
-      </div>
+  </div><!-- .content -->
 
-      <hr />
-
-      <div class="row">
-        <div class="span12">
-          <div id="about">
-            <p>Proudly powered by <a href="http://twitter.github.com/bootstrap/">bootstrap</a>, <a href="http://docs.notmyidea.org/alexis/pelican/">pelican</a>, <a href="http://python.org">python</a> and <a href="http://www.julo.ch/about/">Alex</a>!</p>
-          </div><!-- /#about -->
-        </div><!-- /#contentinfo -->
-      </div>
-    </div>
+</section>
 
 
+    <!-- footer -->
+    <footer>
+      <p>
+        © hhyue, license <a href=""> </a>
+        unless otherwise noted.
+        Generated by <a href= "http://docs.getpelican.com/">Pelican</a> with
+        <a href="http://github.com/porterjamesj/crowsfoot">crowsfoot</a> theme.
+      </p>
+    </footer>
   </body>
 </html>
