@@ -11,11 +11,11 @@ html { /* This stuff is for the sticky footer. */
     min-height:100%;
     position:relative;
     font-size: 18px;
+    background-color:#fafafa;
     -webkit-font-smoothing: antialiased;
 }
 
 body {
-    background-color:#fafafa;
     font-family:'Microsoft YaHei';
     margin: 20px auto 100px auto; /* For sticky footer. */
 }
