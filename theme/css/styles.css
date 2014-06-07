@@ -66,6 +66,9 @@ body {
 .menu li {
     display: inline;
     margin-right: 10px;
+}
+
+.menu li a {
     text-decoration: blink;
 }
 
