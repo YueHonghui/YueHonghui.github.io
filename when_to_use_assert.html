@@ -56,7 +56,7 @@
 </ol>
 <p>对于第1种情况, 比如野指针, 内存状态明显违反代码逻辑, 这种情况下, 应该立即中止程序的运行, 保留现场, 这样可以尽快地从现场提供的信息中修复bug. 可能一个反对的理由是, 在发生第1种情况时, 应该优雅地退出, 比如清理IO, 这样可以尽可能少地丢失数据或者减少数据不一致性. 实际上, 这种想法是一厢情愿, 可能会让数据的破坏越来越严重. 如何能保证在一个错误的内存状态上, 在一个失控的程序逻辑上, 所作的挽回损失的步骤就一定如你所预期? 这种情况下, 再作任何努力都是徒劳的, 都是"在错误的道路上越走越远".</p>
 <p>第2种情况, 比如一个函数的行为是将结果写入到参数传输进来的一个指针上, 如下代码:</p>
-<div class="highlight"><pre><span class="kt">int</span> <span class="n">func</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">ibuf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">in_len</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">obuf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">max_len</span><span class="p">,</span> <span class="kt">size_t</span><span class="o">*</span> <span class="n">out_len</span><span class="p">)</span>
+<div class="highlight"><pre>    <span class="kt">int</span> <span class="n">func</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span> <span class="n">ibuf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">in_len</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">obuf</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">max_len</span><span class="p">,</span> <span class="kt">size_t</span><span class="o">*</span> <span class="n">out_len</span><span class="p">)</span>
 </pre></div>
 
 
