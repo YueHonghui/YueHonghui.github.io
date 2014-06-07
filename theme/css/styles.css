@@ -66,6 +66,7 @@ body {
 .menu li {
     display: inline;
     margin-right: 10px;
+    text-decoration: blink;
 }
 
 /* Article list on index page. */
