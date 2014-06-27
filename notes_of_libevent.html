@@ -3,9 +3,30 @@
 
   <head>
     <title>光明顶</title>
+    <link href="http://yui.yahooapis.com/3.17.2/build/cssreset/cssreset-min.css" rel="stylesheet"/>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/webfont/1.3.0/webfont.js"></script>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-      <link rel="stylesheet" type="text/css" href="http://blog.hhyue.com/theme/css/styles.css"/>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
+
+<link href='/theme/css/prettify.css' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/theme/js/Markdown.Converter.js"></script>
+<script type="text/javascript" src="/theme/js/Markdown.Extra.js"></script>
+<script type="text/javascript" src="/theme/js/prettify.js"></script>
+<script type="text/javascript">
+        $(document).ready(function () {
+            var converter = new Markdown.Converter();
+            Markdown.Extra.init(converter, {
+                extensions: "all",
+                highlighter: "prettify"
+                });
+            var rawcontent = "之前的项目中使用了libevent作为事件发生器, 在使用的过程中, 发生了好多次程序的测试时进入了死循环. 通过发信号中断其运行, 并保存backtrace, 断定死循环发生在libevent的内部loop中. 经过多番排查, 猜测可能是struct event没有初始化, 便进行了event\u005C_add操作, 或者是进行了多次event\u005C_add和event\u005C_del. 翻看libevent源码, 发现当event\u005C_set, event\u005C_add, event\u005C_del调用序列如果不对, 会弄乱libevent内部结构.\u000A\u000A为了彻底防止这种非法调用序列的发生, 写了一个libevent的包装层, 针对常用的几个api, 自己做了层状态守护, 一旦发现非法调用序列, 立即assert.\u000A\u000A合法调用序列如下:\u000A```C\u000A    //event\u000A    event_set\u002D\u003Eevent_set\u003B\u000A    event_set\u002D\u003Eevent_add\u003B\u000A    event_add\u002D\u003Eevent_del\u003B\u000A    event_del\u002D\u003Eevent_set\u003B\u000A\u000A    //timer\u000A    evtimer_set\u002D\u003Eevtimer_set\u003B\u000A    evtimer_set\u002D\u003Eevtimer_add\u003B\u000A    evtimer_add\u002D\u003Eevtimer_del\u003B\u000A    evtimer_del\u002D\u003Eevtimer_set\u000A    evtimer_add\u002D\u003Etimeout\u000A    timeout\u002D\u003Eevtimer_set\u003B\u000A```\u000A以上调用序列中, 完全禁止timer的event操作使用event\u005C_set, event\u005C_add, event\u005C_del等 操作, 只允许使用evtimer系列操作. 这是与libevent原有的api定义不符的, 其原有定义中timer的event是可以混用这两组api的. 为什么这样子做? 这是因为在实现这个包装层的时候, 我一直在想libevent库的api实现为什么不做这么一种状态守护, 发现非法操作时, 不是默默地接受, 而是拒绝执行(assert? 返回错误码?). 在一番尝试之后, 发现timer的event的操作的这种\u0022灵活的选择性\u0022成了实现这个包装层的阻碍, 无法找到办法去跟踪这种调用路径.直到去掉了这种灵活性后, 选择上面的那组合法调用序列, 包装层很快就完成了. 个人认为这是libevent的api设计的一个ugly的地方, 自作聪明地为干一件事情提供了多种\u0022灵活的选择\u0022, 正确的做法应该是干一件事情, 有且只有一种最合适的做法.\u000A\u000A如预料的, 在提供了这层包装层后, 便发现了多个非法调用序列, 在清理完这些调用序列后, 就再也没有发生类似的死循环事件. 在这件事中, 虽然保证合法的调用序列本来就应该是调用者的责任, 但如果提供健壮的非法调用序列侦测机制, 便可以大大提高正确性和生产效率. 如非必要, 应禁止为了所谓的灵活性而牺牲api的简单和单义性.\u000A";
+            var ohtml = converter.makeHtml(rawcontent);
+            $('.article').append(ohtml);
+            prettyPrint();
+        });
+</script>
+
+    <link rel="stylesheet" type="text/css" href="./theme/css/styles.css"/>
       <meta charset="utf-8" />
   </head>
 
@@ -15,7 +36,7 @@
       <!-- site image -->
 
       <div class = "sitebanner">
-        <h1><a class="sitetitle nodec" href="http://blog.hhyue.com">光明顶</a></h1>
+        <h1><a class="sitetitle nodec" href=".">光明顶</a></h1>
         <h3 class ="sitesubtitle"></h3>
         <!-- nav -->
         <nav class="menu">
@@ -48,29 +69,7 @@
   </div><!-- .postinfo -->
 
   <div class="article">
-    <p>之前的项目中使用了libevent作为事件发生器, 在使用的过程中, 发生了好多次程序的测试时进入了死循环. 通过发信号中断其运行, 并保存backtrace, 断定死循环发生在libevent的内部loop中. 经过多番排查, 猜测可能是struct event没有初始化, 便进行了event_add操作, 或者是进行了多次event_add和event_del. 翻看libevent源码, 发现当event_set, event_add, event_del调用序列如果不对, 会弄乱libevent内部结构.</p>
-<p>为了彻底防止这种非法调用序列的发生, 写了一个libevent的包装层, 针对常用的几个api, 自己做了层状态守护, 一旦发现非法调用序列, 立即assert.</p>
-<p>合法调用序列如下:</p>
-<div class="highlight"><pre>    <span class="c1">//event</span>
-    <span class="n">event_set</span><span class="o">-&gt;</span><span class="n">event_set</span><span class="p">;</span>
-    <span class="n">event_set</span><span class="o">-&gt;</span><span class="n">event_add</span><span class="p">;</span>
-    <span class="n">event_add</span><span class="o">-&gt;</span><span class="n">event_del</span><span class="p">;</span>
-    <span class="n">event_del</span><span class="o">-&gt;</span><span class="n">event_set</span><span class="p">;</span>
-
-    <span class="c1">//timer</span>
-    <span class="n">evtimer_set</span><span class="o">-&gt;</span><span class="n">evtimer_set</span><span class="p">;</span>
-    <span class="n">evtimer_set</span><span class="o">-&gt;</span><span class="n">evtimer_add</span><span class="p">;</span>
-    <span class="n">evtimer_add</span><span class="o">-&gt;</span><span class="n">evtimer_del</span><span class="p">;</span>
-    <span class="n">evtimer_del</span><span class="o">-&gt;</span><span class="n">evtimer_set</span>
-    <span class="n">evtimer_add</span><span class="o">-&gt;</span><span class="n">timeout</span>
-    <span class="n">timeout</span><span class="o">-&gt;</span><span class="n">evtimer_set</span><span class="p">;</span>
-</pre></div>
-
-
-<p>以上调用序列中, 完全禁止timer的event操作使用event_set, event_add, event_del等 操作, 只允许使用evtimer系列操作. 这是与libevent原有的api定义不符的, 其原有定义中timer的event是可以混用这两组api的. 为什么这样子做? 这是因为在实现这个包装层的时候, 我一直在想libevent库的api实现为什么不做这么一种状态守护, 发现非法操作时, 不是默默地接受, 而是拒绝执行(assert? 返回错误码?). 在一番尝试之后, 发现timer的event的操作的这种"灵活的选择性"成了实现这个包装层的阻碍, 无法找到办法去跟踪这种调用路径.直到去掉了这种灵活性后, 选择上面的那组合法调用序列, 包装层很快就完成了. 个人认为这是libevent的api设计的一个ugly的地方, 自作聪明地为干一件事情提供了多种"灵活的选择", 正确的做法应该是干一件事情, 有且只有一种最合适的做法.</p>
-<p>如预料的, 在提供了这层包装层后, 便发现了多个非法调用序列, 在清理完这些调用序列后, 就再也没有发生类似的死循环事件. 在这件事中, 虽然保证合法的调用序列本来就应该是调用者的责任, 但如果提供健壮的非法调用序列侦测机制, 便可以大大提高正确性和生产效率. 如非必要, 应禁止为了所谓的灵活性而牺牲api的简单和单义性.</p>
   </div><!-- .content -->
-
 </section>
 
 

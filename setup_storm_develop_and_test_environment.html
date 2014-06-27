@@ -3,9 +3,30 @@
 
   <head>
     <title>光明顶</title>
+    <link href="http://yui.yahooapis.com/3.17.2/build/cssreset/cssreset-min.css" rel="stylesheet"/>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/webfont/1.3.0/webfont.js"></script>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-      <link rel="stylesheet" type="text/css" href="http://blog.hhyue.com/theme/css/styles.css"/>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
+
+<link href='/theme/css/prettify.css' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/theme/js/Markdown.Converter.js"></script>
+<script type="text/javascript" src="/theme/js/Markdown.Extra.js"></script>
+<script type="text/javascript" src="/theme/js/prettify.js"></script>
+<script type="text/javascript">
+        $(document).ready(function () {
+            var converter = new Markdown.Converter();
+            Markdown.Extra.init(converter, {
+                extensions: "all",
+                highlighter: "prettify"
+                });
+            var rawcontent = "## Storm测试环境安装\u000A### 依赖\u000A * python2.7\u000A * oracle jdk6 (并已经设置好了JAVA_HOME变量)\u000A * libtool\u000A * make\u000A * gcc\u000A * libuuid\u002Ddev\u000A\u000A### 环境变量假设\u000A假设当前操作用户为user,则假定如下变量：\u000A\u000A```bash\u000ALOCAL_DIR\u003D$HOME/.local\u000AOP_DIR\u003D$HOME/software/storm\u002Denvironment\u000A```\u000A\u000A### Zookeeper\u000A安装代码:\u000A\u000A```bash\u000Acd $OP_DIR\u000Awget \u0022http://mirrors.hust.edu.cn/apache/zookeeper/zookeeper\u002D3.4.5/zookeeper\u002D3.4.5.tar.gz\u0022\u000Atar \u002Dzxvf zookeeper\u002D3.4.5.tar.gz\u000Amv zookeeper\u002D3.4.5 $LOCAL_DIR\u000A```\u000A打开$HOME/.bashrc文件设置ZOOKEEPER_HOME和修改PATH环境变量：\u000A\u000A```bash\u000Aexport ZOOKEEPER_HOME\u003D$HOME/.local/zookeeper\u002D3.4.5\u000Aexport PATH\u003D$ZOOKEEPER_HOME/bin:$PATH\u000A```\u000A使环境变量生效：\u000A\u000A```bash\u000Asource $HOME/.bashrc\u000A```\u000A单实例配置：\u000A\u000A```bash\u000Acd $ZOOKEEPER_HOME/conf\u000Acp zoo_sample.cfg zoo.cfg\u000A```\u000A启动实例：\u000A\u000A```bash\u000AzkServer.sh\u000A```\u000A### Storm\u000A#### zeromq 2.1.7\u000A按storm文档的建议，需要编译安装2.1.7版本的zeromq，其它版本可能有问题。此版本较老，为了不影响系统zeromq环境，单独编译安装：\u000A\u000A```bash\u000Acd $OP_DIR\u000Awget http://download.zeromq.org/zeromq\u002D2.1.7.tar.gz\u000Atar \u002Dxzf zeromq\u002D2.1.7.tar.gz\u000Acd zeromq\u002D2.1.7\u000A./configure \u002D\u002Dprefix\u003D$LOCAL_DIR\u000Amake\u000Amake install\u000A```\u000A#### jzmq\u000A\u000A```bash\u000Acd $OP_DIR\u000Agit clone https://github.com/nathanmarz/jzmq.git\u000Acd jzmq\u000A./autogen.sh\u000A./configure \u002D\u002Dprefix\u003D$LOCAL_DIR \u002D\u002Dwith\u002Dzeromq\u003D$LOCAL_DIR\u000Amake\u000Atouch src/classdist_noinst.stamp\u000Amake\u000Ajavac cd src/org/zeromq/*.java\u000Amake\u000Amake install\u000A```\u000A#### storm\u000A\u000A```bash\u000Acd $OP_DIR\u000Awget \u0022https://www.dropbox.com/s/fl4kr7w0oc8ihdw/storm\u002D0.8.2.zip\u0022\u000Aunzip storm\u002D0.8.2.zip\u000Amv storm\u002D0.8.2 $LOCAL_DIR\u000A```\u000A打开$HOME/.bashrc,设置环境变量：\u000A\u000A```bash\u000Aexport STORM_HOME\u003D$HOME/.local/storm\u002D0.8.2\u000Aexport PATH\u003D$STORM_HOME/bin:$PATH\u000A```\u000A使环境变量生效：\u000A\u000A```bash\u000Asource $HOME/.bashrc\u000A```\u000A## Storm开发环境安装\u000A### eclipse\u000A安装eclipse的方法参考网上的教程，待eclipse安装好后，再安装内置maven插件。注意，此插件只用来导入maven项目，真正的编译还是用命令行工具（内置的maven插件折腾了一阵，一直有问题）\u000A### maven\u000A安装maven\u000A```bash\u000Asudo apt\u002Dget install maven\u000A```\u000A配置maven代理\u000A编辑$HOME/.m2/settings.xml，加入如下内容：\u000A```bash\u000A\u003Cproxies\u003E\u000A    \u003Cproxy\u003E     \u000A        \u003Cactive\u003Etrue\u003C/active\u003E \u000A        \u003Cprotocol\u003Ehttp\u003C/protocol\u003E \u000A        \u003Chost\u003E127.0.0.1\u003C/host\u003E \u000A        \u003Cport\u003E8087\u003C/port\u003E \u000A        \u003Cnonproxyhosts\u003E*github.com*|*clojars.org*|*1verge.net*\u003C/nonproxyhosts\u003E \u000A    \u003C/proxy\u003E\u000A\u003C/proxies\u003E\u000A```\u000A根据自己的情况修改上述配置中的代理地址及不需要代理的host。如果自己的网络条件不需要代理，就可以访问源，那么可以将active一项改为false。根据本人使用情况，有一些源不用代理速度奇慢，甚至无法访问。\u000A## storm\u002Dstarter示例运行\u000A## 参考资料\u000A* [storm\u002Dwiki:Installing\u002Dnative\u002Ddependencies](https://github.com/nathanmarz/storm/wiki/Installing\u002Dnative\u002Ddependencies \u0022storm\u002Dwiki:Installing\u002Dnative\u002Ddependencies\u0022)\u000A* [Twitter Storm安装配置（单机版）笔记](http://blog.sina.com.cn/s/blog_546abd9f0101cce8.html \u0022Twitter Storm安装配置（单机版）笔记\u0022)\u000A* [安装twitter storm集群组件ZeroMQ，jzmq时遇到的一系列问题](http://my.oschina.net/mingdongcheng/blog/43009 \u0022安装twitter storm集群组件ZeroMQ，jzmq时遇到的一系列问题\u0022)";
+            var ohtml = converter.makeHtml(rawcontent);
+            $('.article').append(ohtml);
+            prettyPrint();
+        });
+</script>
+
+    <link rel="stylesheet" type="text/css" href="./theme/css/styles.css"/>
       <meta charset="utf-8" />
   </head>
 
@@ -15,7 +36,7 @@
       <!-- site image -->
 
       <div class = "sitebanner">
-        <h1><a class="sitetitle nodec" href="http://blog.hhyue.com">光明顶</a></h1>
+        <h1><a class="sitetitle nodec" href=".">光明顶</a></h1>
         <h3 class ="sitesubtitle"></h3>
         <!-- nav -->
         <nav class="menu">
@@ -48,134 +69,7 @@
   </div><!-- .postinfo -->
 
   <div class="article">
-    <h2>Storm测试环境安装</h2>
-<h3>依赖</h3>
-<ul>
-<li>python2.7</li>
-<li>oracle jdk6 (并已经设置好了JAVA_HOME变量)</li>
-<li>libtool</li>
-<li>make</li>
-<li>gcc</li>
-<li>libuuid-dev</li>
-</ul>
-<h3>环境变量假设</h3>
-<p>假设当前操作用户为user,则假定如下变量：</p>
-<div class="highlight"><pre><span class="nv">LOCAL_DIR</span><span class="o">=</span><span class="nv">$HOME</span>/.local
-<span class="nv">OP_DIR</span><span class="o">=</span><span class="nv">$HOME</span>/software/storm-environment
-</pre></div>
-
-
-<h3>Zookeeper</h3>
-<p>安装代码:</p>
-<div class="highlight"><pre><span class="nb">cd</span> <span class="nv">$OP_DIR</span>
-wget <span class="s2">&quot;http://mirrors.hust.edu.cn/apache/zookeeper/zookeeper-3.4.5/zookeeper-3.4.5.tar.gz&quot;</span>
-tar -zxvf zookeeper-3.4.5.tar.gz
-mv zookeeper-3.4.5 <span class="nv">$LOCAL_DIR</span>
-</pre></div>
-
-
-<p>打开$HOME/.bashrc文件设置ZOOKEEPER_HOME和修改PATH环境变量：</p>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">ZOOKEEPER_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.local/zookeeper-3.4.5
-<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$ZOOKEEPER_HOME</span>/bin:<span class="nv">$PATH</span>
-</pre></div>
-
-
-<p>使环境变量生效：</p>
-<div class="highlight"><pre><span class="nb">source</span> <span class="nv">$HOME</span>/.bashrc
-</pre></div>
-
-
-<p>单实例配置：</p>
-<div class="highlight"><pre><span class="nb">cd</span> <span class="nv">$ZOOKEEPER_HOME</span>/conf
-cp zoo_sample.cfg zoo.cfg
-</pre></div>
-
-
-<p>启动实例：</p>
-<div class="highlight"><pre>zkServer.sh
-</pre></div>
-
-
-<h3>Storm</h3>
-<h4>zeromq 2.1.7</h4>
-<p>按storm文档的建议，需要编译安装2.1.7版本的zeromq，其它版本可能有问题。此版本较老，为了不影响系统zeromq环境，单独编译安装：</p>
-<div class="highlight"><pre><span class="nb">cd</span> <span class="nv">$OP_DIR</span>
-wget http://download.zeromq.org/zeromq-2.1.7.tar.gz
-tar -xzf zeromq-2.1.7.tar.gz
-<span class="nb">cd </span>zeromq-2.1.7
-./configure --prefix<span class="o">=</span><span class="nv">$LOCAL_DIR</span>
-make
-make install
-</pre></div>
-
-
-<h4>jzmq</h4>
-<div class="highlight"><pre><span class="nb">cd</span> <span class="nv">$OP_DIR</span>
-git clone https://github.com/nathanmarz/jzmq.git
-<span class="nb">cd </span>jzmq
-./autogen.sh
-./configure --prefix<span class="o">=</span><span class="nv">$LOCAL_DIR</span> --with-zeromq<span class="o">=</span><span class="nv">$LOCAL_DIR</span>
-make
-touch src/classdist_noinst.stamp
-make
-javac <span class="nb">cd </span>src/org/zeromq/*.java
-make
-make install
-</pre></div>
-
-
-<h4>storm</h4>
-<div class="highlight"><pre><span class="nb">cd</span> <span class="nv">$OP_DIR</span>
-wget <span class="s2">&quot;https://www.dropbox.com/s/fl4kr7w0oc8ihdw/storm-0.8.2.zip&quot;</span>
-unzip storm-0.8.2.zip
-mv storm-0.8.2 <span class="nv">$LOCAL_DIR</span>
-</pre></div>
-
-
-<p>打开$HOME/.bashrc,设置环境变量：</p>
-<div class="highlight"><pre><span class="nb">export </span><span class="nv">STORM_HOME</span><span class="o">=</span><span class="nv">$HOME</span>/.local/storm-0.8.2
-<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$STORM_HOME</span>/bin:<span class="nv">$PATH</span>
-</pre></div>
-
-
-<p>使环境变量生效：</p>
-<div class="highlight"><pre><span class="nb">source</span> <span class="nv">$HOME</span>/.bashrc
-</pre></div>
-
-
-<h2>Storm开发环境安装</h2>
-<h3>eclipse</h3>
-<p>安装eclipse的方法参考网上的教程，待eclipse安装好后，再安装内置maven插件。注意，此插件只用来导入maven项目，真正的编译还是用命令行工具（内置的maven插件折腾了一阵，一直有问题）</p>
-<h3>maven</h3>
-<p>安装maven</p>
-<div class="highlight"><pre>sudo apt-get install maven
-</pre></div>
-
-
-<p>配置maven代理
-编辑$HOME/.m2/settings.xml，加入如下内容：</p>
-<div class="highlight"><pre>&lt;proxies&gt;
-    &lt;proxy&gt;     
-        &lt;active&gt;true&lt;/active&gt; 
-        &lt;protocol&gt;http&lt;/protocol&gt; 
-        &lt;host&gt;127.0.0.1&lt;/host&gt; 
-        &lt;port&gt;8087&lt;/port&gt; 
-        &lt;nonproxyhosts&gt;*github.com*|*clojars.org*|*1verge.net*&lt;/nonproxyhosts&gt; 
-    &lt;/proxy&gt;
-&lt;/proxies&gt;
-</pre></div>
-
-
-<p>根据自己的情况修改上述配置中的代理地址及不需要代理的host。如果自己的网络条件不需要代理，就可以访问源，那么可以将active一项改为false。根据本人使用情况，有一些源不用代理速度奇慢，甚至无法访问。</p>
-<h2>storm-starter示例运行</h2>
-<h2>参考资料</h2>
-<ul>
-<li><a href="https://github.com/nathanmarz/storm/wiki/Installing-native-dependencies" title="storm-wiki:Installing-native-dependencies">storm-wiki:Installing-native-dependencies</a></li>
-<li><a href="http://blog.sina.com.cn/s/blog_546abd9f0101cce8.html" title="Twitter Storm安装配置（单机版）笔记">Twitter Storm安装配置（单机版）笔记</a></li>
-<li><a href="http://my.oschina.net/mingdongcheng/blog/43009" title="安装twitter storm集群组件ZeroMQ，jzmq时遇到的一系列问题">安装twitter storm集群组件ZeroMQ，jzmq时遇到的一系列问题</a></li>
-</ul>
   </div><!-- .content -->
-
 </section>
 
 

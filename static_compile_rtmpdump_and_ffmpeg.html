@@ -3,9 +3,30 @@
 
   <head>
     <title>光明顶</title>
+    <link href="http://yui.yahooapis.com/3.17.2/build/cssreset/cssreset-min.css" rel="stylesheet"/>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/webfont/1.3.0/webfont.js"></script>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-      <link rel="stylesheet" type="text/css" href="http://blog.hhyue.com/theme/css/styles.css"/>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
+
+<link href='/theme/css/prettify.css' rel='stylesheet' type='text/css'/>
+<script type="text/javascript" src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/theme/js/Markdown.Converter.js"></script>
+<script type="text/javascript" src="/theme/js/Markdown.Extra.js"></script>
+<script type="text/javascript" src="/theme/js/prettify.js"></script>
+<script type="text/javascript">
+        $(document).ready(function () {
+            var converter = new Markdown.Converter();
+            Markdown.Extra.init(converter, {
+                extensions: "all",
+                highlighter: "prettify"
+                });
+            var rawcontent = "废话不多说, 直接上编译脚本, debian 7.1 amd64上测试通过:\u000A\u000A    BUILD_DIR\u003D$HOME/work/ffmpeg/build\u000A    BIN_DIR\u003D$HOME/work/ffmpeg/bin\u000A     \u000A    #zlib\u000A    wget http://zlib.net/zlib\u002D1.2.8.tar.gz\u000A    tar \u002Dzxvf zlib\u002D1.2.8.tar.gz\u000A    cd zlib\u002D1.2.8\u000A    ./configure \u002D\u002Dprefix\u003D${BUILD_DIR} \u002D\u002Dstatic\u000A    make \u002Dj2\u000A    make install\u000A    cd ..\u000A     \u000A    #openssl\u000A    wget http://www.openssl.org/source/openssl\u002D1.0.1e.tar.gz\u000A    tar \u002Dzxvf openssl\u002D1.0.1e.tar.gz\u000A    cd openssl\u002D1.0.1e\u000A    ./config \u002D\u002Dprefix\u003D${BUILD_DIR} \u002D\u002Dopenssldir\u003D${BUILD_DIR}/openssl no\u002Dshared zlib\u000A    make \u002Dj2\u000A    make install\u000A    cd ..\u000A\u000A    #rtmpdump\u000A    wget http://rtmpdump.mplayerhq.hu/download/rtmpdump\u002D2.3.tgz\u000A    tar \u002Dzxvf rtmpdump\u002D2.3.tgz\u000A    cd rtmpdump\u002D2.3\u000A    make prefix\u003D${BUILD_DIR} SYS\u003Dposix SHARED\u003D XLDFLAGS\u003D\u002DL${BUILD_DIR}/lib XLIBS\u003D\u002D  ldl\u000A    make install prefix\u003D${BUILD_DIR} SYS\u003Dposix SHARED\u003D XLDFLAGS\u003D\u002DL${BUILD_DIR}/lib XLIBS\u003D\u002Dldl\u000A    cd ..\u000A     \u000A    #yasm\u000A    wget http://www.tortall.net/projects/yasm/releases/yasm\u002D1.2.0.tar.gz yasm\u002D1.2.0.tar.gz\u000A    tar \u002Dzxvf yasm\u002D1.2.0.tar.gz\u000A    cd yasm\u002D1.2.0\u000A    ./configure \u002D\u002Dprefix\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Dbindir\u003D\u0022$BIN_DIR\u0022\u000A    make \u002Dj2\u000A    make install\u000A    make distclean\u000A    export PATH\u003D${BIN_DIR}:${PATH}\u000A    #. ~/.bash_profile\u000A    cd ..\u000A     \u000A    #x264\u000A    git clone \u002D\u002Ddepth 1 git://git.videolan.org/x264.git\u000A    cd x264\u000A    ./configure \u002D\u002Dprefix\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Dbindir\u003D\u0022$BIN_DIR\u0022 \u002D\u002Denable\u002Dstatic\u000A    make \u002Dj2\u000A    make install\u002Dlib\u002Dstatic\u000A    make distclean\u000A    cd ..\u000A \u000A    #fdk_aac\u000A    git clone \u002D\u002Ddepth 1 git://github.com/mstorsjo/fdk\u002Daac.git\u000A    cd fdk\u002Daac\u000A    automake \u002D\u002Dadd\u002Dmissing\u000A    autoreconf \u002Dfiv\u000A    ./configure \u002D\u002Dprefix\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Ddisable\u002Dshared\u000A    make \u002Dj2\u000A    make install\u000A    make distclean\u000A    cd ..\u000A     \u000A    #mp3lame\u000A    wget http://downloads.sourceforge.net/project/lame/lame/3.99/lame\u002D3.99.5.tar.gz lame\u002D    3.99.5.tar.gz\u000A    tar xzvf lame\u002D3.99.5.tar.gz\u000A    cd lame\u002D3.99.5\u000A    ./configure \u002D\u002Dprefix\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Dbindir\u003D\u0022$BIN_DIR\u0022 \u002D\u002Ddisable\u002Dshared \u002D\u002Denable\u002Dnasm\u000A    make \u002Dj2\u000A    make install\u000A    make distclean\u000A    cd ..\u000A     \u000A    #opus\u000A    wget http://downloads.xiph.org/releases/opus/opus\u002D1.0.2.tar.gz\u000A    tar \u002Dzxvf opus\u002D1.0.2.tar.gz\u000A    cd opus\u002D1.0.2\u000A    ./configure \u002D\u002Dprefix\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Ddisable\u002Dshared\u000A    make \u002Dj2\u000A    make install\u000A    make distclean\u000A    cd ..\u000A     \u000A    #ogg\u000A    wget http://downloads.xiph.org/releases/ogg/libogg\u002D1.3.1.tar.gz\u000A    tar \u002Dzxvf libogg\u002D1.3.1.tar.gz\u000A    cd libogg\u002D1.3.1\u000A    ./configure \u002D\u002Dprefix\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Ddisable\u002Dshared\u000A    make \u002Dj2\u000A    make install\u000A    make distclean\u000A    cd ..\u000A     \u000A    #vorbis\u000A    wget http://downloads.xiph.org/releases/vorbis/libvorbis\u002D1.3.3.tar.gz\u000A    tar \u002Dzxvf libvorbis\u002D1.3.3.tar.gz\u000A    cd libvorbis\u002D1.3.3\u000A    ./configure \u002D\u002Dprefix\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Dwith\u002Dogg\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Ddisable\u002Dshared\u000A    make \u002Dj2\u000A    make install\u000A    make distclean\u000A    cd ..\u000A     \u000A    #vpx\u000A    #git clone \u002D\u002Ddepth 1 http://git.chromium.org/webm/libvpx.git\u000A    #cd libvpx\u000A    #./configure \u002D\u002Dprefix\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Ddisable\u002Dexamples\u000A    #make \u002Dj2\u000A    #make install\u000A    #make clean\u000A     \u000A    #ffmpeg\u000A    wget http://www.ffmpeg.org/releases/ffmpeg\u002D1.2.3.tar.gz\u000A    tar \u002Dzxvf ffmpeg\u002D1.2.3.tar.gz\u000A    cd ffmpeg\u002D1.2.3\u000A    PKG_CONFIG_PATH\u003D\u0022$BUILD_DIR/lib/pkgconfig\u0022 ./configure \u002D\u002Dprefix\u003D\u0022$BUILD_DIR\u0022 \u002D\u002Dextra\u002Dcflags\u003D\u0022\u002DI$BUILD_DIR/include\u0022 \u002D\u002Dextra\u002Dldflags\u003D\u0022\u002DL$BUILD_DIR/lib\u0022 \u002D\u002Dbindir\u003D\u0022$BIN_DIR\u0022 \u002D\u002Dextra\u002Dlibs\u003D\u0022\u002Dldl\u0022 \u002D\u002Denable\u002Dgpl \u002D\u002Denable\u002Dnonfree \u002D\u002Denable\u002Dlibfdk_aac \u002D\u002Denable\u002Dlibmp3lame \u002D\u002Denable\u002Dlibopus \u002D\u002Denable\u002Dlibvorbis \u002D\u002Denable\u002Dlibx264 \u002D\u002Denable\u002Dlibrtmp\u000A    make \u002Dj2\u000A    make install\u000A    hash \u002Dr\u000A    #. ~/.bash_profile\u000A";
+            var ohtml = converter.makeHtml(rawcontent);
+            $('.article').append(ohtml);
+            prettyPrint();
+        });
+</script>
+
+    <link rel="stylesheet" type="text/css" href="./theme/css/styles.css"/>
       <meta charset="utf-8" />
   </head>
 
@@ -15,7 +36,7 @@
       <!-- site image -->
 
       <div class = "sitebanner">
-        <h1><a class="sitetitle nodec" href="http://blog.hhyue.com">光明顶</a></h1>
+        <h1><a class="sitetitle nodec" href=".">光明顶</a></h1>
         <h3 class ="sitesubtitle"></h3>
         <!-- nav -->
         <nav class="menu">
@@ -48,128 +69,7 @@
   </div><!-- .postinfo -->
 
   <div class="article">
-    <p>废话不多说, 直接上编译脚本, debian 7.1 amd64上测试通过:</p>
-<div class="highlight"><pre>BUILD_DIR=<span class="nv">$HOME</span>/work/ffmpeg/build
-BIN_DIR=<span class="nv">$HOME</span>/work/ffmpeg/bin
-
-#zlib
-wget http://zlib.net/zlib-1.2.8.tar.gz
-tar -zxvf zlib-1.2.8.tar.gz
-cd zlib-1.2.8
-./configure --prefix=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span> --static
-make -j2
-make install
-cd ..
-
-#openssl
-wget http://www.openssl.org/source/openssl-1.0.1e.tar.gz
-tar -zxvf openssl-1.0.1e.tar.gz
-cd openssl-1.0.1e
-./config --prefix=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span> --openssldir=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span>/openssl no-shared zlib
-make -j2
-make install
-cd ..
-
-#rtmpdump
-wget http://rtmpdump.mplayerhq.hu/download/rtmpdump-2.3.tgz
-tar -zxvf rtmpdump-2.3.tgz
-cd rtmpdump-2.3
-make prefix=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span> SYS=posix SHARED= XLDFLAGS=-L<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span>/lib XLIBS=-  ldl
-make install prefix=<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span> SYS=posix SHARED= XLDFLAGS=-L<span class="cp">${</span><span class="n">BUILD_DIR</span><span class="cp">}</span>/lib XLIBS=-ldl
-cd ..
-
-#yasm
-wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz yasm-1.2.0.tar.gz
-tar -zxvf yasm-1.2.0.tar.gz
-cd yasm-1.2.0
-./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --bindir=&quot;<span class="nv">$BIN_DIR</span>&quot;
-make -j2
-make install
-make distclean
-export PATH=<span class="cp">${</span><span class="n">BIN_DIR</span><span class="cp">}</span>:<span class="cp">${</span><span class="n">PATH</span><span class="cp">}</span>
-#. ~/.bash_profile
-cd ..
-
-#x264
-git clone --depth 1 git://git.videolan.org/x264.git
-cd x264
-./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --bindir=&quot;<span class="nv">$BIN_DIR</span>&quot; --enable-static
-make -j2
-make install-lib-static
-make distclean
-cd ..
-
-#fdk_aac
-git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git
-cd fdk-aac
-automake --add-missing
-autoreconf -fiv
-./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-shared
-make -j2
-make install
-make distclean
-cd ..
-
-#mp3lame
-wget http://downloads.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz lame-    3.99.5.tar.gz
-tar xzvf lame-3.99.5.tar.gz
-cd lame-3.99.5
-./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --bindir=&quot;<span class="nv">$BIN_DIR</span>&quot; --disable-shared --enable-nasm
-make -j2
-make install
-make distclean
-cd ..
-
-#opus
-wget http://downloads.xiph.org/releases/opus/opus-1.0.2.tar.gz
-tar -zxvf opus-1.0.2.tar.gz
-cd opus-1.0.2
-./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-shared
-make -j2
-make install
-make distclean
-cd ..
-
-#ogg
-wget http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.gz
-tar -zxvf libogg-1.3.1.tar.gz
-cd libogg-1.3.1
-./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-shared
-make -j2
-make install
-make distclean
-cd ..
-
-#vorbis
-wget http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.gz
-tar -zxvf libvorbis-1.3.3.tar.gz
-cd libvorbis-1.3.3
-./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --with-ogg=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-shared
-make -j2
-make install
-make distclean
-cd ..
-
-#vpx
-#git clone --depth 1 http://git.chromium.org/webm/libvpx.git
-#cd libvpx
-#./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --disable-examples
-#make -j2
-#make install
-#make clean
-
-#ffmpeg
-wget http://www.ffmpeg.org/releases/ffmpeg-1.2.3.tar.gz
-tar -zxvf ffmpeg-1.2.3.tar.gz
-cd ffmpeg-1.2.3
-PKG_CONFIG_PATH=&quot;<span class="nv">$BUILD_DIR</span>/lib/pkgconfig&quot; ./configure --prefix=&quot;<span class="nv">$BUILD_DIR</span>&quot; --extra-cflags=&quot;-I<span class="nv">$BUILD_DIR</span>/include&quot; --extra-ldflags=&quot;-L<span class="nv">$BUILD_DIR</span>/lib&quot; --bindir=&quot;<span class="nv">$BIN_DIR</span>&quot; --extra-libs=&quot;-ldl&quot; --enable-gpl --enable-nonfree --enable-libfdk_aac --enable-libmp3lame --enable-libopus --enable-libvorbis --enable-libx264 --enable-librtmp
-make -j2
-make install
-hash -r
-#. ~/.bash_profile
-</pre></div>
   </div><!-- .content -->
-
 </section>
 
 
